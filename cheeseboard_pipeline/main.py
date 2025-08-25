@@ -9,7 +9,7 @@ from core import visualization as viz
 from variants import curtain_context as cch
 
 # Define output folder
-EXPERIMENT = '50trial_10day'
+EXPERIMENT = '40trial_10day'
 TRIAL_METRICS_FOLDER = f'output/{EXPERIMENT}/trial_metrics'
 SUMMARY_CSV = f'output/{EXPERIMENT}/session_summary.csv'
 os.makedirs(TRIAL_METRICS_FOLDER, exist_ok=True)
@@ -79,6 +79,17 @@ def run_pipeline(excel_path):
                 viz.plot_collapsed_paths_by_context(
                     trial_df, x, y, outdir=outdir, session_label=session_label
                 )
+            else:
+                for _, row in trial_df.iterrows():
+                    trial = int(row.get('trial'))
+                    viz.plot_trial_paths(
+                        start = int(row.get('start_frame_local')),
+                        end = int(row.get('stop_frame_local')),
+                        x = x,
+                        y = y,
+                        outfile = os.path.join('output','trial_plots',f'trial_{trial}.png'),
+                        title = f'Trial {trial} trajectory'
+                    )
 
             # Save individual session results
             output_path = session.get('Trial Metrics Output', f'{session['Rat']}_trial_metrics_{session['Session']}.csv')

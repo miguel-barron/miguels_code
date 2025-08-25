@@ -1,6 +1,14 @@
 import numpy as np
 import pandas as pd
-from core.trial_extraction import find_event_between
+
+def find_event_between(trial_df, label, start_frame, end_frame):
+    for idx, row in trial_df.iterrows():
+        if (
+            row['Behavior'] == label
+            and start_frame <= row['Image index'] <= end_frame
+        ):
+            return int(row['Image index'])
+    return None
 
 def determine_success_custom(score_df, start_frame, end_frame, reward_frame,trial_time):
     wrong_well = find_event_between(score_df, '2', start_frame, end_frame)

@@ -1,7 +1,7 @@
 import os
 import re
 try:
-    from tqdm import tqdm
+    from tqdm import tqdm                                                         #type: ignore
 except ImportError:
     tqdm = None
 

@@ -211,22 +211,23 @@ def plot_collapsed_paths_by_context(
             ys = y[start:end+1]
 
             # # optional de-spike / smoothing if you have it
-            try:
-                xs, ys, diag = _clean_path(x[start:end+1], y[start:end+1],
-                            fps=30.0, cm_per_unit=1.0,          
-                            max_step_cm=8.0, max_speed_cm_s=80.0,
-                            max_turn_deg=170, interp_max_gap=6, smooth_win=15
-            )
-            except NameError:
-                pass  # no _clean_path available; just plot raw slices
+            # try:
+            #     xs, ys, diag = _clean_path(x[start:end+1], y[start:end+1],
+            #                 fps=30.0, cm_per_unit=1.0,          
+            #                 max_step_cm=8.0, max_speed_cm_s=80.0,
+            #                 max_turn_deg=170, interp_max_gap=6, smooth_win=15
+            # )
+            # except NameError:
+            #     pass  # no _clean_path available; just plot raw slices
 
-            if len(xs) == 0 or len(ys) == 0:
-                continue
+            # if len(xs) == 0 or len(ys) == 0:
+            #     continue
 
-            good = np.isfinite(xs) & np.isfinite(ys)
-            for seg in np.split(np.arange(len(xs)), np.where(~good)[0]):
-                if len(seg) > 1 and np.all(good[seg]):
-                    ax.plot(xs[seg], ys[seg], lw=1.2, alpha=0.65, color='black')
+            # good = np.isfinite(xs) & np.isfinite(ys)
+            # for seg in np.split(np.arange(len(xs)), np.where(~good)[0]):
+            #     if len(seg) > 1 and np.all(good[seg]):
+            #         ax.plot(xs[seg], ys[seg], lw=1.2, alpha=0.65, color='black')
+            ax.plot(xs, ys, lw=1.2, alpha=0.65, color='black')
             ax.scatter(xs[0],  ys[0],  s=10, color='g', zorder=5)
             ax.scatter(xs[-1], ys[-1], s=10, color='r', marker = 's', zorder=5)
             n_plotted += 1

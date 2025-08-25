@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-from core.trial_extraction import extract_trials, find_event_between, get_reward_frame
 from core.trial_metrics import build_trial_df
 from variants import curtain_context as cch
 
