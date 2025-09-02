@@ -1,0 +1,11 @@
+summary_type,rat,session,block,context,n_trials,n_success,success_rate
+learning_block,GG02,07222025_A,1,wc,10,0,0.0
+learning_block,GG02,07222025_A,2,bc,10,0,0.0
+learning_block,GG02,07222025_A,3,wc,10,0,0.0
+learning_block,GG02,07222025_A,4,bc,9,0,0.0
+learning_block,GG02,07222025_A,5,wc,10,0,0.0
+learning_block,GG08,07222025_A,1,wc,10,0,0.0
+learning_block,GG08,07222025_A,2,bc,10,0,0.0
+learning_block,GG08,07222025_A,3,wc,10,5,0.5
+learning_block,GG08,07222025_A,4,bc,10,0,0.0
+learning_block,GG08,07222025_A,5,wc,9,7,0.7777777777777778

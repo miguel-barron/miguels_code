@@ -146,7 +146,7 @@ def get_column_array(data, key):
     else:
         raise TypeError(f"Unsupported data type for key '{key}': {type(data)}")
 # ------------------------------------------------
-def process_behavioral_data(dlc_data, arena_size=122, likelihood_threshold= 0.3):
+def process_behavioral_data(dlc_data, arena_size=122, likelihood_threshold= 0.1):
     lear_x = get_column_array(dlc_data,'lear_x')
     rear_x = get_column_array(dlc_data,'rear_x')
     lear_y = get_column_array(dlc_data,'lear_y')
@@ -163,10 +163,11 @@ def process_behavioral_data(dlc_data, arena_size=122, likelihood_threshold= 0.3)
         x = np.nanmean(np.vstack([lear_x, rear_x]), axis=0)
         y = np.nanmean(np.vstack([lear_y, rear_y]), axis=0)
 
-    x = interpolate_nans(x)
-    y = interpolate_nans(y)
-    x = remove_outliers(x)
-    y = remove_outliers(y)
+    # x = interpolate_nans(x)
+    # y = interpolate_nans(y)
+    # x = remove_outliers(x)
+    # y = remove_outliers(y)
+    
     x, y = scale_to_arena(x, y, arena_size)
 
     # x_smooth, y_smooth = smooth_positions(x, y)

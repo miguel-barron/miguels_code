@@ -9,7 +9,7 @@ from core import visualization as viz
 from variants import curtain_context as cch
 
 # Define output folder
-EXPERIMENT = '40trial_10day'
+EXPERIMENT = '50trial_10day_#2'
 TRIAL_METRICS_FOLDER = f'output/{EXPERIMENT}/trial_metrics'
 SUMMARY_CSV = f'output/{EXPERIMENT}/session_summary.csv'
 os.makedirs(TRIAL_METRICS_FOLDER, exist_ok=True)
@@ -54,32 +54,17 @@ def run_pipeline(excel_path):
             x, y = tracking_data['x'], tracking_data['y']
             session_label = f"{session['Rat']} {session['Session']}"
             outdir = os.path.join('output',EXPERIMENT, 'plots', f'{session['Rat']}_{session['Session']}')
-            
-            # Trial Visualization for Errors
-            if session['Rat'] == 'GG08' and session['Session'] == '07222025_A':
-                flagged = {25,27,28,29,30,41,42,43,45,47,48,49}
-                for _, row in trial_df.iterrows():
-                    trial = int(row.get('trial'))
-                    if trial in flagged:
-                        viz.plot_trial_paths(
-                            start = int(row.get('start_frame_local')),
-                            end = int(row.get('stop_frame_local')),
-                            x = x,
-                            y = y,
-                            outfile = os.path.join('output','trial_plots',f'trial_{trial}.png'),
-                            title = f'Trial {trial} trajectory'
-                        )
 
             # Visualization Plots
             if session['Type'] == 'Block':
                 viz.plot_collapsed_paths_by_blocks(
-                    trial_df, x, y, outdir=outdir, block_size=10, max_blocks=5, use_local=True, session_label=session_label
+                    trial_df, x, y, outdir=outdir, max_blocks=5, use_local=True, session_label=session_label
                 )
             if session['Type'] == 'Recall':
                 viz.plot_collapsed_paths_by_context(
                     trial_df, x, y, outdir=outdir, session_label=session_label
                 )
-            else:
+            if session['Type'] == 'Trial':
                 for _, row in trial_df.iterrows():
                     trial = int(row.get('trial'))
                     viz.plot_trial_paths(
@@ -87,7 +72,7 @@ def run_pipeline(excel_path):
                         end = int(row.get('stop_frame_local')),
                         x = x,
                         y = y,
-                        outfile = os.path.join('output','trial_plots',f'trial_{trial}.png'),
+                        outfile = os.path.join(outdir,f'trial_{trial}.png'),
                         title = f'Trial {trial} trajectory'
                     )
 

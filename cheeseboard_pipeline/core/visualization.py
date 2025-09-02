@@ -37,17 +37,20 @@ def plot_trial_paths(start,end,x,y,outfile,title, arena_center=None, arena_diame
     ax.add_patch(circ)
     _add_start_box(ax)
 
-    xs, ys, diag = _clean_path(x[start:end+1], y[start:end+1],
-                            fps=30.0, cm_per_unit=1.0,          
-                            max_step_cm=8.0, max_speed_cm_s=80.0,
-                            max_turn_deg=170, interp_max_gap=6, smooth_win=15
-)
-    good = np.isfinite(xs) & np.isfinite(ys)
-    for seg in np.split(np.arange(len(xs)), np.where(~good)[0]):
-        if len(seg) > 1 and np.all(good[seg]):
-            ax.plot(xs[seg], ys[seg], lw=1.2, alpha=0.65, color="black")
+#     xs, ys, diag = _clean_path(x[start:end+1], y[start:end+1],
+#                             fps=30.0, cm_per_unit=1.0,          
+#                             max_step_cm=8.0, max_speed_cm_s=80.0,
+#                             max_turn_deg=170, interp_max_gap=6, smooth_win=15
+# )
+#     good = np.isfinite(xs) & np.isfinite(ys)
+#     for seg in np.split(np.arange(len(xs)), np.where(~good)[0]):
+#         if len(seg) > 1 and np.all(good[seg]):
+#             ax.plot(xs[seg], ys[seg], lw=1.2, alpha=0.65, color="black")
 
-    # start/end dots (subtle)
+    xs = x[start:end]
+    ys = y[start:end]
+    ax.plot(xs, ys, lw=1.2, alpha=0.65, color='black')
+        # start/end dots (subtle)
     ax.scatter(xs[0],  ys[0],  s=10, color='g', zorder=5)
     ax.scatter(xs[-1], ys[-1], s=10, color='r', marker = 's', zorder=5)
 
@@ -60,12 +63,12 @@ def plot_trial_paths(start,end,x,y,outfile,title, arena_center=None, arena_diame
     ax.set_xlabel("X (cm)")
     ax.set_ylabel("Y (cm)")
     ax.set_title(title)
-    ax.text(0.02, 0.02,
-        f"path raw→clean: {diag['raw_path_cm']:.1f}→{diag['clean_path_cm']:.1f} cm\n"
-        f"spikes: {diag['n_bad']} ({diag['pct_bad']:.1f}%)  "
-        f"filled: {diag['n_interpolated']}  "
-        f"remain NaNs: {diag['nans_remaining']}",
-        transform=ax.transAxes, ha="left", va="bottom", fontsize=9)
+    # ax.text(0.02, 0.02,
+    #     f"path raw→clean: {diag['raw_path_cm']:.1f}→{diag['clean_path_cm']:.1f} cm\n"
+    #     f"spikes: {diag['n_bad']} ({diag['pct_bad']:.1f}%)  "
+    #     f"filled: {diag['n_interpolated']}  "
+    #     f"remain NaNs: {diag['nans_remaining']}",
+    #     transform=ax.transAxes, ha="left", va="bottom", fontsize=9)
     fig.tight_layout()
     fig.savefig(outfile, dpi=300)
     plt.close(fig)
@@ -119,21 +122,25 @@ def plot_collapsed_paths_by_blocks(trial_df, x, y, outdir, max_blocks=5, use_loc
             end = min(end, len(x)-1, len(y)-1)
             if end <= start:
                 continue
+            
+            xs = x[start:end+1]
+            ys = y[start:end+1]
 
-            xs, ys, diag = _clean_path(x[start:end+1], y[start:end+1],
-                            fps=30.0, cm_per_unit=1.0,          
-                            max_step_cm=8.0, max_speed_cm_s=80,
-                            max_turn_deg=170, interp_max_gap=6, smooth_win=15
-            )
-            if len(xs) == 0 or len(ys) == 0:
-                continue
+            # xs, ys, diag = _clean_path(x[start:end+1], y[start:end+1],
+            #                 fps=30.0, cm_per_unit=1.0,          
+            #                 max_step_cm=8.0, max_speed_cm_s=80,
+            #                 max_turn_deg=170, interp_max_gap=6, smooth_win=15
+            # )
+            # if len(xs) == 0 or len(ys) == 0:
+            #     continue
 
-            good = np.isfinite(xs) & np.isfinite(ys)
-            for seg in np.split(np.arange(len(xs)), np.where(~good)[0]):
-                if len(seg) > 1 and np.all(good[seg]):
-                    ax.plot(xs[seg], ys[seg], lw=1.2, alpha=0.65, color="black")
+            # good = np.isfinite(xs) & np.isfinite(ys)
+            # for seg in np.split(np.arange(len(xs)), np.where(~good)[0]):
+            #     if len(seg) > 1 and np.all(good[seg]):
+            #         ax.plot(xs[seg], ys[seg], lw=1.2, alpha=0.65, color="black")
 
             # start/end dots (subtle)
+            ax.plot(xs, ys, lw=1.2, alpha=0.65, color='black')
             ax.scatter(xs[0],  ys[0],  s=10, color='g', zorder=5)
             ax.scatter(xs[-1], ys[-1], s=10, color='r', marker = 's', zorder=5)
 
