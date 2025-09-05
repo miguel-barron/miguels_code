@@ -105,14 +105,15 @@ def compute_trial_metrics(trial_df, tracking_data):
 
     for idx, row in trial_df.iterrows():
         start = (int(row['start_frame_local']) if not pd.isna(row['start_frame_local']) else None)
-        end = (int(row['stop_frame_local']) if not pd.isna(row['stop_frame_local']) else None)
+        stop = (int(row['stop_frame_local']) if not pd.isna(row['stop_frame_local']) else None)
+        end = start + 300 if stop - start > 300 else stop
         reward_frame = (int(row['well_visit_local']) if not pd.isna(row['well_visit_local']) else None)
 
-        if start is None or end is None:
+        if start is None or stop is None:
             print(f'[WARN] Trial {idx}: Missing local index — skipping.')
             continue
 
-        path_total = extract.compute_path_length(x, y, start, end)
+        path_total = extract.compute_path_length(x, y, start, stop)
         path_to_reward = (
             extract.compute_path_length(x, y, start, reward_frame)
             if reward_frame is not None else None
@@ -120,6 +121,7 @@ def compute_trial_metrics(trial_df, tracking_data):
         head_dir = extract.get_trial_head_direction(hd, start)
 
         metrics_list.append({
+            'end_frame_local':end,
             'head direction': head_dir,
             'path to well': path_to_reward,
             'total path': path_total
@@ -146,7 +148,7 @@ def get_column_array(data, key):
     else:
         raise TypeError(f"Unsupported data type for key '{key}': {type(data)}")
 # ------------------------------------------------
-def process_behavioral_data(dlc_data, arena_size=122, likelihood_threshold= 0.1):
+def process_behavioral_data(dlc_data, arena_size=122, likelihood_threshold= 0):
     lear_x = get_column_array(dlc_data,'lear_x')
     rear_x = get_column_array(dlc_data,'rear_x')
     lear_y = get_column_array(dlc_data,'lear_y')

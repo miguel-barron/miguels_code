@@ -37,6 +37,7 @@ def plot_trial_paths(start,end,x,y,outfile,title, arena_center=None, arena_diame
     ax.add_patch(circ)
     _add_start_box(ax)
 
+#   Cleaning Path
 #     xs, ys, diag = _clean_path(x[start:end+1], y[start:end+1],
 #                             fps=30.0, cm_per_unit=1.0,          
 #                             max_step_cm=8.0, max_speed_cm_s=80.0,
@@ -63,12 +64,15 @@ def plot_trial_paths(start,end,x,y,outfile,title, arena_center=None, arena_diame
     ax.set_xlabel("X (cm)")
     ax.set_ylabel("Y (cm)")
     ax.set_title(title)
+   
+    # Displaying Clean_Path Diagnosis
     # ax.text(0.02, 0.02,
     #     f"path raw→clean: {diag['raw_path_cm']:.1f}→{diag['clean_path_cm']:.1f} cm\n"
     #     f"spikes: {diag['n_bad']} ({diag['pct_bad']:.1f}%)  "
     #     f"filled: {diag['n_interpolated']}  "
     #     f"remain NaNs: {diag['nans_remaining']}",
     #     transform=ax.transAxes, ha="left", va="bottom", fontsize=9)
+
     fig.tight_layout()
     fig.savefig(outfile, dpi=300)
     plt.close(fig)
@@ -82,7 +86,7 @@ def plot_collapsed_paths_by_blocks(trial_df, x, y, outdir, max_blocks=5, use_loc
     # Add a simple block index based on trial order
     # choose frame columns
     sf_col = 'start_frame_local' if use_local else 'start_frame'
-    ef_col = 'stop_frame_local' if use_local else 'stop_frame'
+    ef_col = 'end_frame_local' if use_local else 'stop_frame'
 
     df = trial_df.copy()
 
@@ -172,7 +176,7 @@ def plot_collapsed_paths_by_context(
 
     # pick frame columns by name
     sf_col = 'start_frame_local' if use_local else 'start_frame'
-    ef_col = 'stop_frame_local' if use_local else 'stop_frame'
+    ef_col = 'end_frame_local' if use_local else 'stop_frame'
 
     # default arena center if not provided
     if arena_center is None:
@@ -180,7 +184,6 @@ def plot_collapsed_paths_by_context(
 
     # only plot trial contexts, skip event rows like '1','2'
     df = trial_df.copy()
-    df = df[df['context'].isin(['wc', 'bc'])]
 
     for ctx in contexts:
         ctx_df = df[df['context'] == ctx].sort_values(by=sf_col)
@@ -252,7 +255,7 @@ def plot_collapsed_paths_by_context(
         fig.tight_layout()
         outpath = os.path.join(outdir, f'context_{ctx}.png')
         if n_plotted > 0:
-            fig.savefig(outpath, dpi=200)
+            fig.savefig(outpath, dpi=300)
         plt.close(fig)
 # ------------------------------------------------
 def _interp_nans_limited(a, max_gap=6):

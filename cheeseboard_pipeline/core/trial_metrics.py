@@ -30,6 +30,7 @@ def build_trial_df(trial_num, start, end, reward_frame, context):
             'start frame': start,
             'well visit frame': reward_frame,
             'stop frame': end,
+            'end_frame_local': None,
             'success': success,
             'head direction': None,
             'trial time': trial_time,

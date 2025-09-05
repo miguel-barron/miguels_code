@@ -131,7 +131,6 @@ def summarize_across_sessions(trial_dfs, session_list):
             g['success_rate'] = g['n_success'] / g['n_trials']
             for _, r in g.iterrows():
                 rows.append({
-                    'summary_type': 'recall_context',
                     'rat': rat_id,
                     'session': sess_id,
                     'block': np.nan,
@@ -151,7 +150,6 @@ def summarize_across_sessions(trial_dfs, session_list):
                     return
                 bdf = pd.DataFrame(bt)
                 rows.append({
-                    'summary_type': 'learning_block',
                     'rat': rat_id,
                     'session': sess_id,
                     'block': bi,
