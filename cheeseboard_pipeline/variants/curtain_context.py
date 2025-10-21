@@ -119,11 +119,11 @@ def summarize_across_sessions(trial_dfs, session_list):
         )
         use = use.sort_values(sort_key).reset_index(drop=True)
 
-        sess_type = sess.get('Type', 'Block')  # default learning
+        sess_type = sess.get('Type', '',)  # default learning
         rat_id    = sess.get('Rat', '')
         sess_id   = sess.get('Session', '')
 
-        if sess_type == 'Recall':
+        if sess_type != 'Block':
             g = use.groupby('context', as_index=False).agg(
                 n_trials=('trial', 'count'),
                 n_success=('success', 'sum')
@@ -177,9 +177,9 @@ def summarize_across_sessions(trial_dfs, session_list):
             flush_block(block_trials, current_context, block_index)
 
     if not rows:
-        return pd.DataFrame(columns=['summary_type','rat','session','block','context','n_trials','n_success','success_rate'])
+        return pd.DataFrame(columns=['rat','session','block','context','n_trials','n_success','success_rate'])
 
-    out = pd.DataFrame(rows, columns=['summary_type','rat','session','block','context','n_trials','n_success','success_rate'])
+    out = pd.DataFrame(rows, columns=['rat','session','block','context','n_trials','n_success','success_rate'])
     # Optional tidy: sort
     out = out.sort_values(['rat','session','summary_type','block','context'], na_position='last').reset_index(drop=True)
     return out

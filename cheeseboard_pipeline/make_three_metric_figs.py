@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 import argparse
 from pathlib import Path
 
@@ -82,7 +82,7 @@ def make_metric_figure(df, metric, ylabel, outdir, fname_stub):
         )
         subplot_idx += 1
 
-    outpath = Path(outdir) / f'{fname_stub}.png'
+    outpath = Path(outdir) / f'{fname_stub}.svg'
     outpath.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(outpath, dpi=300, bbox_inches='tight')
     plt.close(fig)
@@ -96,7 +96,8 @@ def draw_box_with_jitter(ax, x_categories, x_positions, tick_positions, tick_lab
     - Mean is drawn as a circle: wc=black circle, bc=white circle.
     '''
     import numpy as np
-
+    wc = 40.92 #cm
+    bc = 198.12 #cm
     # helper to pick a dominant context for a category
     def dominant_context_for_cat(cat):
         if context_series is None:
@@ -142,16 +143,31 @@ def draw_box_with_jitter(ax, x_categories, x_positions, tick_positions, tick_lab
 
         # choose colors by dominant context
         dom = dominant_context_for_cat(cat)
+        metric_name = (getattr(data_series, "name", "") or "").strip().lower()
+
         # wc = white box; bc = black box; otherwise light grey
         if dom in ('wc', 'white'):
             box_face = 'white'
             mean_face, mean_edge = 'black', 'black'  # black circle
+            if metric_name == "path to well":
+                ideal_y = wc / 2
+            elif metric_name == "total path":
+                ideal_y = wc
+            else:
+                ideal_y = None
         elif dom in ('bc', 'black'):
             box_face = 'black'
             mean_face, mean_edge = 'white', 'white'  # white circle
+            if metric_name == "path to well":
+                ideal_y = bc / 2
+            elif metric_name == "total path":
+                ideal_y = bc
+            else:
+                ideal_y = None
         else:
             box_face = "#DDDDDD"
             mean_face, mean_edge = 'black', 'black'
+            ideal_y = None
 
         for patch in bp['boxes']:
             patch.set_facecolor(box_face)
@@ -172,6 +188,9 @@ def draw_box_with_jitter(ax, x_categories, x_positions, tick_positions, tick_lab
         mean_y = float(np.mean(ys))
         ax.plot([pos], [mean_y], marker='o', markersize=3.5,
                 markerfacecolor=mean_face, markeredgecolor=mean_edge, zorder=3)
+        if ideal_y is not None:
+            ax.plot([pos], [ideal_y], marker='*', markersize=3.5,
+                markerfacecolor='r', markeredgecolor='r', zorder=3)
 
     # axis cosmetics
     ax.set_xlabel(xlabel)
