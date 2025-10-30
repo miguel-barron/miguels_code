@@ -379,7 +379,7 @@ def _moving_average(a, w=3, median_first=True):
     ap = np.pad(a, (pad, pad), mode='edge')
     return np.convolve(ap, k, mode='valid')
 # ------------------------------------------------
-def process_behavioral_data(dlc_data, center, arena_size=122, likelihood_threshold=0.2,
+def process_behavioral_data(dlc_data, center, edge, edge_dis, arena_size, likelihood_threshold=0.2,
                             vel_threshold=10.0, spike_pad=1):
     import numpy as np
 
@@ -409,7 +409,7 @@ def process_behavioral_data(dlc_data, center, arena_size=122, likelihood_thresho
         y = np.nanmean(np.vstack([lear_y, rear_y]), axis=0)
 
     # Scale
-    x,y = scale_to_arena(x, y, arena_size, center=center)
+    x,y = scale_to_arena(x, y, arena_size, center=center, well_px=edge, well_dist_cm=edge_dis)
 
     # Velocity-based spike cleanup
     vel = calculate_velocity(x, y)

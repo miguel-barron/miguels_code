@@ -7,18 +7,28 @@ from core import trial_extraction as extract
 from core import visualization as viz
 from variants import curtain_context as cch
 
+os_system = {'mac': '/Volumes/ASA_Lab', 'wn': 'Z:'}
+
+if sys.platform == 'darwin':
+    os_path = os_system['mac']
+elif sys.platform == 'win32':
+    os_path = os_system['wn']
+else:
+    print(f'Running on an unsupported OS: {sys.platform}')
+
 def run_pipeline(excel_path, experiment, summary):
     session_list = (pd.read_excel(excel_path)).to_dict('records')
     all_trial_dfs = []
-    Data_Folder = os.path.join('/Volumes/ASA_LAB/Data/Julia/ATNRSC/experiments',f'{experiment}','data')
+    Data_Folder = os.path.join(os_path,'/Data/Julia/ATNRSC/experiments',f'{experiment}','data')
 
     CAPS = {'CH_3day': 30, 'CCH_40trial': 10, 'CCH_50trial': 10}
     cap_sec = CAPS.get(experiment, 15)
+    arena_size = 122.0
 
 
     for i, session in enumerate(session_list):
         print(f"\nProcessing Session {i+1}/{len(session_list)}")
-        sfold = os.path.join(session['Path'],session['Session'])    # Session Folder path
+        sfold = os.path.join(os_path,session['Path'],session['Session'])    # Session Folder path
         try:
             # ===== Section 1: Creating Trial Dataframe =====
             slp_path = os.path.join(sfold, session['Position Data'])
@@ -26,7 +36,13 @@ def run_pipeline(excel_path, experiment, summary):
             tracking_df = pd.read_csv(slp_path)
             score_df = pd.read_csv(score_path)
             center = (float(session['Center_x']),float(session['Center_y']))
-
+            if session['Edge_x'] and session['Edge_y']:
+                edge = (float(session['Edge_x']),float(session['Edge_y']))
+                edge_distance = arena_size/2
+            else: 
+                edge = None
+                edge_distance = None
+            
             # analyze_trials_for_session extracts trial start and stop frames, context, trial time,
             # well visit frames, determines trial success, and builds trial dataframe
             trial_df = extract.analyze_session_trials(score_df, session, experiment)
@@ -37,7 +53,7 @@ def run_pipeline(excel_path, experiment, summary):
             frame_to_idx = {int(f): i for i, f in enumerate(tracking_trial_data['frame_idx'].to_numpy())}
             trial_df = extract.map_df(trial_df, experiment, frame_to_idx)
             arrs = pos.dlc_arrays(tracking_trial_data, cols=("lear.x","lear.y","rear.x","rear.y","lear.score","rear.score"))
-            tracking_data = pos.process_behavioral_data(arrs,center)
+            tracking_data = pos.process_behavioral_data(arrs,center,edge,edge_distance,arena_size)
             # Computing hd
             trial_df.update(pos.compute_trial_metrics(trial_df,experiment,tracking_data,cap_sec))
             
